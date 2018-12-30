@@ -18,6 +18,11 @@
 - (void) invokeTapToFocus:(CGPoint)point;
 @end;
 
+@protocol Base64Helper
+- (NSString *)getBase64Image:(CGImageRef)imageRef withQuality:(CGFloat) quality;
+- (NSString *)getBase64FromCIImage:(CIImage*)imageRef;
+@end;
+
 @interface CameraRenderController : UIViewController <AVCaptureVideoDataOutputSampleBufferDelegate, OnFocusDelegate> {
   GLuint _renderBuffer;
   CVOpenGLESTextureCacheRef _videoTextureCache;

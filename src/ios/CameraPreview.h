@@ -5,7 +5,7 @@
 #import "CameraSessionManager.h"
 #import "CameraRenderController.h"
 
-@interface CameraPreview : CDVPlugin <TakePictureDelegate, FocusDelegate>
+@interface CameraPreview : CDVPlugin <TakePictureDelegate, FocusDelegate, Base64Helper>
 
 - (void) startCamera:(CDVInvokedUrlCommand*)command;
 - (void) stopCamera:(CDVInvokedUrlCommand*)command;
@@ -42,6 +42,8 @@
 - (void) invokeTakePicture;
 
 - (void) invokeTapToFocus:(CGPoint) point;
+- (NSString *)getBase64Image:(CGImageRef)imageRef withQuality:(CGFloat) quality;
+- (NSString *)getBase64FromCIImage:(CIImage*)imageRef;
 
 @property (nonatomic) CameraSessionManager *sessionManager;
 @property (nonatomic) CameraRenderController *cameraRenderController;

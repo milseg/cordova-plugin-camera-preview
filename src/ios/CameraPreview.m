@@ -47,6 +47,7 @@
     self.cameraRenderController.sessionManager = self.sessionManager;
     self.cameraRenderController.view.frame = CGRectMake(x, y, width, height);
     self.cameraRenderController.delegate = self;
+    self.cameraRenderController.frameB64 = @"";
 
     [self.viewController addChildViewController:self.cameraRenderController];
 
@@ -392,10 +393,28 @@
 
 - (void) getCurrentBaseFrame:(CDVInvokedUrlCommand*)command {
   CDVPluginResult *pluginResult;
-
+  NSString* info;
+  //NSString* calculateb64;
+  NSString * baseString;
   if (self.cameraRenderController != nil) {
-    NSString * baseString = self.cameraRenderController.frameB64;
-    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:baseString ];
+    if(self.cameraRenderController.frameB64 == nil) {
+      info = @"nilframe";
+      //Fallback to lastFrame
+      baseString = self.getBase64FromCIImage(self.delegate.lastFrame);
+    } else if([self.cameraRenderController.frameB64 isEqual: @""]) {
+      info = @"nostring";
+      //Fallback to lastFrame
+      baseString = self.getBase64FromCIImage(self.delegate.lastFrame);
+    } else {//frameB64 OK
+      info = @"OK";
+      baseString = self.cameraRenderController.frameB64;
+    }
+
+    NSMutableArray *params = [[NSMutableArray alloc] init];
+    [params addObject:baseString];
+    [params addObject:info];
+    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:params];
+    [pluginResult setKeepCallbackAsBool:true];
   } else {
     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Session not started"];
   }
@@ -753,5 +772,20 @@
         [self.commandDelegate sendPluginResult:pluginResult callbackId:self.onPictureTakenHandlerId];
       }
     }];
+}
+
+- (NSString *)getBase64FromCIImage:(CIImage*)imageRef {
+  CGImageRef finalImage = [self.cameraRenderController.ciContext createCGImage:imageRef fromRect:finalCImage.extent];
+  UIImage *resultImage = [UIImage imageWithCGImage:finalImage];
+
+  double radians = [self radiansFromUIImageOrientation:resultImage.imageOrientation];
+  CGImageRef resultFinalImage = [self CGImageRotated:finalImage withRadians:radians];
+
+  CGImageRelease(finalImage); // release CGImageRef to remove memory leaks
+
+  NSString *base64Image = [self getBase64Image:resultFinalImage withQuality:quality];
+
+  CGImageRelease(resultFinalImage); // release CGImageRef to remove memory leaks
+  return base64Image;
 }
 @end

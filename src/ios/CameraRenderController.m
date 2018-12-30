@@ -158,17 +158,6 @@
       });
 }
 
-- (UIImage *)UIImageFromCIImage:(CIImage *)ciImage {
-    UIImage *uiImage;
-    uiImage = [[UIImage alloc] initWithCIImage:ciImage];
-    /*if (self.devicePosition == AVCaptureDevicePositionBack) {
-        uiImage = [[UIImage alloc] initWithCIImage:ciImage];
-    } else {
-        uiImage = [[UIImage alloc] initWithCIImage:ciImage scale:1.0 orientation:UIImageOrientationUpMirrored];
-    }*/
-    return uiImage;
-}
-
 -(void)captureOutput:(AVCaptureOutput *)captureOutput didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection {
   if ([self.renderLock tryLock]) {
     CVPixelBufferRef pixelBuffer = (CVPixelBufferRef)CMSampleBufferGetImageBuffer(sampleBuffer);
@@ -215,13 +204,13 @@
     }
 
     self.latestFrame = croppedImage;
-    @autoreleasepool {
-      // Get ui image from core image
-      UIImage *uiImage = [self UIImageFromCIImage:croppedImage];
-      NSData *fullsizeData = UIImageJPEGRepresentation(uiImage, 1.0);
-      NSString *fullImageDataToB64 = nil;
-      fullImageDataToB64 = [NSString stringWithFormat:@"data:image/jpeg;base64,%@", [fullsizeData base64EncodedStringWithOptions:0]];
-      self.frameB64 = (fullImageDataToB64) ? fullImageDataToB64 : @"";
+    NSString* tempb64 = self.delegate.getBase64FromCIImage(croppedImage);
+    if(tempb64 == nil) {
+      //NSLog(@"Tempb64 is nil");
+    } else if([tempb64 isEqual: @""]) {
+      //NSLog(@"Tempb64 is empty");
+    } else {
+      self.frameB64 = tempb64;
     }
 
     CGFloat pointScale;
