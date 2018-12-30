@@ -11,7 +11,7 @@
 - (CameraRenderController *)init {
   if (self = [super init]) {
     self.renderLock = [[NSLock alloc] init];
-    self.frameB64 = (fullImageDataToB64) ? fullImageDataToB64 : @"";
+    self.frameB64 = @"";
   }
   return self;
 }
