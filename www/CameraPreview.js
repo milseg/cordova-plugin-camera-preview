@@ -173,6 +173,10 @@ CameraPreview.setWhiteBalanceMode = function(whiteBalanceMode, onSuccess, onErro
     exec(onSuccess, onError, PLUGIN_NAME, "setWhiteBalanceMode", [whiteBalanceMode]);
 };
 
+CameraPreview.getCurrentBaseFrame = function(onSuccess, onError) {
+    exec(onSuccess, onError, PLUGIN_NAME, "getCurrentBaseFrame", []);
+};
+
 CameraPreview.onBackButton = function(onSuccess, onError) {
     exec(onSuccess, onError, PLUGIN_NAME, "onBackButton");
 };

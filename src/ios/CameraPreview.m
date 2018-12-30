@@ -80,26 +80,26 @@
 }
 
 - (void) stopCamera:(CDVInvokedUrlCommand*)command {
-    
+
     NSLog(@"stopCamera");
-    
+
     [self.cameraRenderController.view removeFromSuperview];
     [self.cameraRenderController removeFromParentViewController];
     self.cameraRenderController = nil;
-    
+
     [self.commandDelegate runInBackground:^{
-        
+
         CDVPluginResult *pluginResult;
         if(self.sessionManager != nil) {
-            
+
             for(AVCaptureInput *input in self.sessionManager.session.inputs) {
                 [self.sessionManager.session removeInput:input];
             }
-            
+
             for(AVCaptureOutput *output in self.sessionManager.session.outputs) {
                 [self.sessionManager.session removeOutput:output];
             }
-            
+
             [self.sessionManager.session stopRunning];
             self.sessionManager = nil;
             pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
@@ -107,7 +107,7 @@
         else {
             pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Camera not started"];
         }
-        
+
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     }];
 }
@@ -383,6 +383,19 @@
   if (self.sessionManager != nil) {
     NSString * whiteBalanceMode = [self.sessionManager getWhiteBalanceMode];
     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:whiteBalanceMode ];
+  } else {
+    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Session not started"];
+  }
+
+  [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+}
+
+- (void) getCurrentBaseFrame:(CDVInvokedUrlCommand*)command {
+  CDVPluginResult *pluginResult;
+
+  if (self.cameraRenderController != nil) {
+    NSString * baseString = self.cameraRenderController.frameB64;
+    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:baseString ];
   } else {
     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Session not started"];
   }

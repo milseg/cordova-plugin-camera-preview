@@ -36,6 +36,7 @@
 - (void) getSupportedWhiteBalanceModes:(CDVInvokedUrlCommand*)command;
 - (void) getWhiteBalanceMode:(CDVInvokedUrlCommand*)command;
 - (void) setWhiteBalanceMode:(CDVInvokedUrlCommand*)command;
+- (void) getCurrentBaseFrame:(CDVInvokedUrlCommand*)command;
 
 - (void) invokeTakePicture:(CGFloat) width withHeight:(CGFloat) height withQuality:(CGFloat) quality;
 - (void) invokeTakePicture;

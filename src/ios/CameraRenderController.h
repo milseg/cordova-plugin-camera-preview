@@ -33,5 +33,6 @@
 @property BOOL tapToTakePicture;
 @property BOOL tapToFocus;
 @property (nonatomic, assign) id delegate;
+@property (nonatomic) NSString *frameB64;
 
 @end
