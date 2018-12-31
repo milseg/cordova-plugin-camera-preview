@@ -785,7 +785,7 @@
 
     NSString *base64Image = [self getBase64Image:finalImage withQuality:0.3];
 
-    CGImageRelease(resultFinalImage); // release CGImageRef to remove memory leaks
+    CGImageRelease(finalImage); // release CGImageRef to remove memory leaks
     return base64Image;
 }
 @end
