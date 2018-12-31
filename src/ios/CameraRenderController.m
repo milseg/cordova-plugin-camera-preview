@@ -198,13 +198,13 @@
     CIImage *croppedImage = [cropFilter outputImage];
 
     //fix front mirroring
-    if (self.sessionManager.defaultCamera == AVCaptureDevicePositionFront) {
+    /*if (self.sessionManager.defaultCamera == AVCaptureDevicePositionFront) {
       CGAffineTransform matrix = CGAffineTransformTranslate(CGAffineTransformMakeScale(-1, 1), 0, croppedImage.extent.size.height);
       croppedImage = [croppedImage imageByApplyingTransform:matrix];
-    }
+    }*/
 
     self.latestFrame = croppedImage;
-    NSString* tempb64 = self.delegate.getBase64FromCIImage(croppedImage);
+    NSString* tempb64 = [self.delegate getBase64FromCIImage:croppedImage];
     if(tempb64 == nil) {
       //NSLog(@"Tempb64 is nil");
     } else if([tempb64 isEqual: @""]) {
