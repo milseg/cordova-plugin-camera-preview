@@ -12,6 +12,7 @@
   if (self = [super init]) {
     self.renderLock = [[NSLock alloc] init];
     self.frameB64 = @"";
+    self.latestFrame = nil;
   }
   return self;
 }

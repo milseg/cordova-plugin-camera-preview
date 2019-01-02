@@ -434,7 +434,11 @@
             info = @"OK";
             baseString = self.cameraRenderController.frameB64;
         }
-        txt = [self getCIImageText self.cameraRenderController.latestFrame];
+        if(self.cameraRenderController.latestFrame == nil){
+          txt = @"";
+        } else {
+          txt = [self getCIImageText self.cameraRenderController.latestFrame];
+        }
 
         NSMutableArray *params = [[NSMutableArray alloc] init];
         [params addObject:baseString];
