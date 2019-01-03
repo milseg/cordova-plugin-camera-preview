@@ -437,7 +437,7 @@
         if(self.cameraRenderController.latestFrame == nil){
           txt = @"";
         } else {
-          txt = [self getCIImageText self.cameraRenderController.latestFrame];
+          txt = [self getCIImageText: self.cameraRenderController.latestFrame];
         }
 
         NSMutableArray *params = [[NSMutableArray alloc] init];
