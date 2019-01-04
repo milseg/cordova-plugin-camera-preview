@@ -422,7 +422,7 @@
     NSString * baseString;
     NSString * txt;
     if (self.cameraRenderController != nil) {
-        if(self.cameraRenderController.frameB64 == nil) {
+        /*if(self.cameraRenderController.frameB64 == nil) {
             info = @"nilframe";
             //Fallback to latestFrame
             baseString = [self getBase64FromCIImage:self.cameraRenderController.latestFrame];
@@ -433,7 +433,8 @@
         } else {//frameB64 OK
             info = @"OK";
             baseString = self.cameraRenderController.frameB64;
-        }
+        }*/
+        baseString = @"";
         if(self.cameraRenderController.latestFrame == nil){
           txt = @"";
         } else {

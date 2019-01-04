@@ -198,7 +198,7 @@
     [cropFilter setValue:cropRect forKey:@"inputRectangle"];
     CIImage *croppedImage = [cropFilter outputImage];
 
-    NSString* tempb64 = [self.delegate getBase64FromCIImage:croppedImage];
+    /*NSString* tempb64 = [self.delegate getBase64FromCIImage:croppedImage];
     if(tempb64 == nil) {
       //NSLog(@"Tempb64 is nil");
     } else if([tempb64 isEqual: @""]) {
@@ -206,7 +206,8 @@
     } else {
       self.frameB64 = tempb64;
       self.latestFrame = croppedImage;
-    }
+    }*/
+    self.latestFrame = croppedImage;
 
     //fix front mirroring
     if (self.sessionManager.defaultCamera == AVCaptureDevicePositionFront) {
