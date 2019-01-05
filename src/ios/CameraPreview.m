@@ -392,9 +392,13 @@
 }
 
 - (NSString*) getCIImageText:(CIImage*)img {
+  if(img == nil) {
+    return @"";
+  }
   CGImageRef finalImage = [self.cameraRenderController.ciContext createCGImage:img fromRect:img.extent];
   UIImage *resultImage = [UIImage imageWithCGImage:finalImage];
-  NSArray<GMVTextBlockFeature *> *features = [self.textDetector featuresInImage:resultImage options:nil];
+  UIImage *processImage = [self resizeImage: resultImage];
+  NSArray<GMVTextBlockFeature *> *features = [self.textDetector featuresInImage:processImage options:nil];
   CGImageRelease(finalImage); // release CGImageRef to remove memory leaks
   int count = 0;
   NSMutableString* lines = [NSMutableString string];
@@ -413,6 +417,49 @@
   }
   ret = lines;
   return ret;
+}
+
+-(UIImage *)resizeImage:(UIImage *)image
+{
+    float actualHeight = image.size.height;
+    float actualWidth = image.size.width;
+    float maxHeight = 600;
+    float maxWidth = 600;
+    float imgRatio = actualWidth/actualHeight;
+    float maxRatio = maxWidth/maxHeight;
+    float compressionQuality = 0.50;//50 percent compression
+
+    if (actualHeight > maxHeight || actualWidth > maxWidth)
+    {
+        if(imgRatio < maxRatio)
+        {
+            //adjust width according to maxHeight
+            imgRatio = maxHeight / actualHeight;
+            actualWidth = imgRatio * actualWidth;
+            actualHeight = maxHeight;
+        }
+        else if(imgRatio > maxRatio)
+        {
+            //adjust height according to maxWidth
+            imgRatio = maxWidth / actualWidth;
+            actualHeight = imgRatio * actualHeight;
+            actualWidth = maxWidth;
+        }
+        else
+        {
+            actualHeight = maxHeight;
+            actualWidth = maxWidth;
+        }
+    }
+
+    CGRect rect = CGRectMake(0.0, 0.0, actualWidth, actualHeight);
+    UIGraphicsBeginImageContext(rect.size);
+    [image drawInRect:rect];
+    UIImage *img = UIGraphicsGetImageFromCurrentImageContext();
+    NSData *imageData = UIImageJPEGRepresentation(img, compressionQuality);
+    UIGraphicsEndImageContext();
+    return [UIImage imageWithData:imageData];
+
 }
 
 - (void) getCurrentBaseFrame:(CDVInvokedUrlCommand*)command {
@@ -434,6 +481,7 @@
             info = @"OK";
             baseString = self.cameraRenderController.frameB64;
         }*/
+        info = @"";
         baseString = @"";
         if(self.cameraRenderController.latestFrame == nil){
           txt = @"";
