@@ -80,6 +80,16 @@
     }
 }
 
+- (void) hasStreaming:(CDVInvokedUrlCommand*)command {
+  CDVPluginResult *pluginResult;
+  if(self.sessionManager != nil) {
+    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"YES"];
+  } else {
+    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"NO"];
+  }
+  [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+}
+
 - (void) stopCamera:(CDVInvokedUrlCommand*)command {
 
     NSLog(@"stopCamera");

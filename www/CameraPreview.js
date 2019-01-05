@@ -39,6 +39,10 @@ CameraPreview.stopCamera = function(onSuccess, onError) {
     exec(onSuccess, onError, PLUGIN_NAME, "stopCamera", []);
 };
 
+CameraPreview.hasStreaming = function(onSuccess, onError) {
+    exec(onSuccess, onError, PLUGIN_NAME, "hasStreaming", []);
+};
+
 CameraPreview.switchCamera = function(onSuccess, onError) {
     exec(onSuccess, onError, PLUGIN_NAME, "switchCamera", []);
 };

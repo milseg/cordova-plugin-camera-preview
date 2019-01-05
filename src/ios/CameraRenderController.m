@@ -198,13 +198,15 @@
     [cropFilter setValue:cropRect forKey:@"inputRectangle"];
     CIImage *croppedImage = [cropFilter outputImage];
 
-    NSString* tempb64 = [self.delegate getBase64FromCIImage:croppedImage];
+    /*NSString* tempb64 = [self.delegate getBase64FromCIImage:croppedImage];
     if(tempb64 == nil) {
       //NSLog(@"Tempb64 is nil");
     } else if([tempb64 isEqual: @""]) {
       //NSLog(@"Tempb64 is empty");
     } else {
       //self.frameB64 = tempb64;
+    }*/
+    if(croppedImage != nil) {
       self.latestFrame = croppedImage;
     }
 
