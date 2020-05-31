@@ -402,7 +402,7 @@
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
-- (void) getCIImageText:(CIImage*)img completion:(void(^)((NSString*)rectxt))completion{
+- (void) getCIImageText:(CIImage*)img completion:(void(^)( NSString* rectxt)) endtxt {
   if(img == nil) {
     return;
   }
@@ -413,25 +413,27 @@
   //ML KIT CODE
   FIRVisionImage *firImage = [[FIRVisionImage alloc] initWithImage:processImage];
   CGImageRelease(finalImage); // release CGImageRef to remove memory leaks
-  int count = 0;
-  NSMutableString* lines = [NSMutableString string];
-  NSString* ret;
+  
   // Iterate over each text block.
   
   [self.textRecognizer processImage:firImage
                       completion:^(FIRVisionText *_Nullable result,
                                    NSError *_Nullable error) {
+      NSString* __block ept = @"";
+      int __block count = 0;
+      NSMutableString* __block lines = [NSMutableString string];
+      NSString* __block ret;
       if (error != nil) {
         // ...
         NSLog(@"error while get ciimagetext: %@", error);
-        completion(@"");
+        endtxt(ept);
         return;        
       }
       if(result == nil) {
-        completion(@"");
+        endtxt(ept);
         return;
       }
-        for (FIRVisionTextBlock *block in result.blocks) {
+        for (FIRVisionTextBlock __block *block in result.blocks) {
           for (FIRVisionTextLine *line in block.lines) {
             count++;
             [lines appendString:[line.text mutableCopy]];
@@ -439,11 +441,11 @@
           }
         }
         if(count == 0) {
-             completion(@"");
+             endtxt(ept);
              return;
         }
         ret = lines;
-        completion(ret);
+        endtxt(ret);
 
       // Recognized text
     }];
@@ -494,7 +496,7 @@
 }
 
 - (void) getCurrentBaseFrame:(CDVInvokedUrlCommand*)command {
-    CDVPluginResult *pluginResult;
+    CDVPluginResult __block *pluginResult;
     NSString* info;
     //NSString* calculateb64;
     NSString * baseString;
@@ -518,7 +520,7 @@
         if(self.cameraRenderController.latestFrame == nil){
           txt = @"";
         } else {
-          [self getCIImageText: self.cameraRenderController.latestFrame, completion: ^((NSString*) rectxt) {
+          [self getCIImageText: self.cameraRenderController.latestFrame completion: ^(NSString* rectxt) {
                 [params addObject:baseString];
                 [params addObject:info];
                 [params addObject:txt];
