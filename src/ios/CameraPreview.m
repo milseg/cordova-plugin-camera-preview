@@ -473,13 +473,13 @@
 
       // Recognized text
     }//end block try
-    @catch (NSException *__block exception) { //block catch
-        err(getExceptionAsString(exception));
+    @catch (NSException* exception) { //block catch
+        err([self getExceptionAsString: exception]);
     }//end block catch
     }];
   }//end function try
-    @catch (NSException *exception) {//Whole function catch
-        err(getExceptionAsString(exception));
+    @catch (NSException* exception) {//Whole function catch
+        err([self getExceptionAsString: exception]);
     }//end function catch
 }
 
@@ -567,8 +567,8 @@
                 [pluginResult setKeepCallbackAsBool:true];
                 [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
             }//end block try
-            @catch(NSException *__block exception) {
-                pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:getExceptionAsString(exception)];
+            @catch(NSException* exception) {
+                pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:[self getExceptionAsString: exception]];
                 [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
             }//end block catch
             } fail: ^(NSString* s) {
@@ -583,7 +583,7 @@
     }
     }//end func try
     @catch(NSException* exception) {
-        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:getExceptionAsString(exception)];
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:[self getExceptionAsString: exception]];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     }//end func catch
 }
