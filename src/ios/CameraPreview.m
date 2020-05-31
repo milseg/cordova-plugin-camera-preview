@@ -69,7 +69,8 @@
         self.sessionManager.delegate = self.cameraRenderController;
 
         [self.sessionManager setupSession:defaultCamera completion:^(BOOL started) {
-            self.textDetector = [GMVDetector detectorOfType:GMVDetectorTypeText options:nil];
+            self.mlVision = [FIRVision vision];
+            self.textRecognizer = [self.mlVision onDeviceTextRecognizer];
             [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK] callbackId:command.callbackId];
 
         }];
@@ -401,32 +402,52 @@
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
-- (NSString*) getCIImageText:(CIImage*)img {
+- (void) getCIImageText:(CIImage*)img completion:(void(^)((NSString*)rectxt))completion{
   if(img == nil) {
-    return @"";
+    return;
   }
   CGImageRef finalImage = [self.cameraRenderController.ciContext createCGImage:img fromRect:img.extent];
   UIImage *resultImage = [UIImage imageWithCGImage:finalImage];
   UIImage *processImage = [self resizeImage: resultImage];
-  NSArray<GMVTextBlockFeature *> *features = [self.textDetector featuresInImage:processImage options:nil];
+
+  //ML KIT CODE
+  FIRVisionImage *firImage = [[FIRVisionImage alloc] initWithImage:processImage];
   CGImageRelease(finalImage); // release CGImageRef to remove memory leaks
   int count = 0;
   NSMutableString* lines = [NSMutableString string];
   NSString* ret;
   // Iterate over each text block.
-  for (GMVTextBlockFeature *textBlock in features) {
-      count++;
-      // For each text block, iterate over each line.
-      for (GMVTextLineFeature *textLine in textBlock.lines) {
-          [lines appendString:[textLine.value mutableCopy]];
-          [lines appendString:@"\n"];
+  
+  [self.textRecognizer processImage:firImage
+                      completion:^(FIRVisionText *_Nullable result,
+                                   NSError *_Nullable error) {
+      if (error != nil) {
+        // ...
+        NSLog(@"error while get ciimagetext: %@", error);
+        completion(@"");
+        return;        
       }
-  }
-  if(count == 0) {
-    return @"";
-  }
-  ret = lines;
-  return ret;
+      if(result == nil) {
+        completion(@"");
+        return;
+      }
+        for (FIRVisionTextBlock *block in result.blocks) {
+          for (FIRVisionTextLine *line in block.lines) {
+            count++;
+            [lines appendString:[line.text mutableCopy]];
+            [lines appendString:@"\n"];
+          }
+        }
+        if(count == 0) {
+             completion(@"");
+             return;
+        }
+        ret = lines;
+        completion(ret);
+
+      // Recognized text
+    }];
+  
 }
 
 -(UIImage *)resizeImage:(UIImage *)image
@@ -478,6 +499,7 @@
     //NSString* calculateb64;
     NSString * baseString;
     NSString * txt;
+    NSMutableArray *params = [[NSMutableArray alloc] init];
     if (self.cameraRenderController != nil) {
         /*if(self.cameraRenderController.frameB64 == nil) {
             info = @"nilframe";
@@ -496,20 +518,20 @@
         if(self.cameraRenderController.latestFrame == nil){
           txt = @"";
         } else {
-          txt = [self getCIImageText: self.cameraRenderController.latestFrame];
+          [self getCIImageText: self.cameraRenderController.latestFrame, completion: ^((NSString*) rectxt) {
+                [params addObject:baseString];
+                [params addObject:info];
+                [params addObject:txt];
+                pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:params];
+                [pluginResult setKeepCallbackAsBool:true];
+                [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+            }
+          ];
         }
-
-        NSMutableArray *params = [[NSMutableArray alloc] init];
-        [params addObject:baseString];
-        [params addObject:info];
-        [params addObject:txt];
-        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:params];
-        [pluginResult setKeepCallbackAsBool:true];
     } else {
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Session not started"];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     }
-
-    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
 - (void) setWhiteBalanceMode:(CDVInvokedUrlCommand*)command {
