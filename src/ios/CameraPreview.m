@@ -419,10 +419,14 @@
   [self.textRecognizer processImage:firImage
                       completion:^(FIRVisionText *_Nullable result,
                                    NSError *_Nullable error) {
-      NSString* __block ept = @"";
+      NSString *__block ept = @"";
       int __block count = 0;
-      NSMutableString* __block lines = [NSMutableString string];
-      NSString* __block ret;
+      NSMutableString *__block lines = [NSMutableString string];
+      NSString *__block ret;
+
+      FIRVisionTextBlock *__block firblock;
+      FIRVisionTextLine *__block line;
+
       if (error != nil) {
         // ...
         NSLog(@"error while get ciimagetext: %@", error);
@@ -433,8 +437,8 @@
         endtxt(ept);
         return;
       }
-        for (FIRVisionTextBlock __block *block in result.blocks) {
-          for (FIRVisionTextLine *line in block.lines) {
+        for (firblock in result.blocks) {
+          for (line in firblock.lines) {
             count++;
             [lines appendString:[line.text mutableCopy]];
             [lines appendString:@"\n"];
@@ -496,12 +500,12 @@
 }
 
 - (void) getCurrentBaseFrame:(CDVInvokedUrlCommand*)command {
-    CDVPluginResult __block *pluginResult;
-    NSString* info;
+    CDVPluginResult *__block pluginResult;
+    NSString *__block info;
     //NSString* calculateb64;
-    NSString * baseString;
-    NSString * txt;
-    NSMutableArray *params = [[NSMutableArray alloc] init];
+    NSString *__block baseString;
+    NSString *__block txt;
+    NSMutableArray *__block params = [[NSMutableArray alloc] init];
     if (self.cameraRenderController != nil) {
         /*if(self.cameraRenderController.frameB64 == nil) {
             info = @"nilframe";
@@ -519,11 +523,17 @@
         baseString = @"";
         if(self.cameraRenderController.latestFrame == nil){
           txt = @"";
+          [params addObject:baseString];
+          [params addObject:info];
+          [params addObject:txt];
+          pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:params];
+          [pluginResult setKeepCallbackAsBool:true];
+          [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
         } else {
           [self getCIImageText: self.cameraRenderController.latestFrame completion: ^(NSString* rectxt) {
                 [params addObject:baseString];
                 [params addObject:info];
-                [params addObject:txt];
+                [params addObject:rectxt];
                 pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:params];
                 [pluginResult setKeepCallbackAsBool:true];
                 [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
