@@ -74,7 +74,14 @@
     <framework src="GLKit.framework" />
     <framework src="CoreVideo.framework" />
     <framework src="QuartzCore.framework"/>
-    <framework src="Firebase/MLVisionTextModel" type="podspec" spec="~> 0.19.0" />
+    <podspec>
+        <config>
+            <source url="https://cdn.cocoapods.org/" />
+        </config>
+        <pods use-frameworks="true">
+            <pod name="FirebaseMLVisionTextModel" spec="~> 0.19.0" />
+        </pods>
+    </podspec>
   </platform>
 
 </plugin>
