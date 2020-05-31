@@ -1,7 +1,7 @@
 #import <Cordova/CDV.h>
 #import <Cordova/CDVPlugin.h>
 #import <Cordova/CDVInvokedUrlCommand.h>
-@import Firebase;
+#import <Firebase/Firebase.h>
 
 #import "CameraSessionManager.h"
 #import "CameraRenderController.h"
@@ -46,7 +46,7 @@
 - (void) invokeTapToFocus:(CGPoint) point;
 - (NSString *)getBase64Image:(CGImageRef)imageRef withQuality:(CGFloat) quality;
 - (NSString *)getBase64FromCIImage:(CIImage*)imageRef;
-- (void) getCIImageText:(CIImage*)img completion:(void(^)((NSString*) rectxt) )completion;
+- (void) getCIImageText:(CIImage*)img completion:(void(^)(NSString* rectxt)) endtxt;
 
 @property (nonatomic) CameraSessionManager *sessionManager;
 @property (nonatomic) CameraRenderController *cameraRenderController;
