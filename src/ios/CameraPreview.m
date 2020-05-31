@@ -423,6 +423,8 @@
   if(img == nil) {
     return;
   }
+  @try {
+    
   CGImageRef finalImage = [self.cameraRenderController.ciContext createCGImage:img fromRect:img.extent];
   UIImage *resultImage = [UIImage imageWithCGImage:finalImage];
   UIImage *processImage = [self resizeImage: resultImage];
@@ -436,6 +438,7 @@
   [self.textRecognizer processImage:firImage
                       completion:^(FIRVisionText *_Nullable result,
                                    NSError *_Nullable error) {
+    @try {
       NSString *__block ept = @"";
       int __block count = 0;
       NSMutableString *__block lines = [NSMutableString string];
@@ -469,8 +472,15 @@
         success(ret);
 
       // Recognized text
+    }//end block try
+    @catch (NSException *__block exception) { //block catch
+        err(getExceptionAsString(exception));
+    }//end block catch
     }];
-  
+  }//end function try
+    @catch (NSException *exception) {//Whole function catch
+        err(getExceptionAsString(exception));
+    }//end function catch
 }
 
 -(UIImage *)resizeImage:(UIImage *)image
@@ -523,6 +533,7 @@
     NSString *__block baseString;
     NSString *__block txt;
     NSMutableArray *__block params = [[NSMutableArray alloc] init];
+    @try { //begin func try 
     if (self.cameraRenderController != nil) {
         /*if(self.cameraRenderController.frameB64 == nil) {
             info = @"nilframe";
@@ -548,12 +559,18 @@
           [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
         } else {
           [self getCIImageText: self.cameraRenderController.latestFrame completion: ^(NSString* rectxt) {
+            @try { //begin block try
                 [params addObject:baseString];
                 [params addObject:info];
                 [params addObject:rectxt];
                 pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:params];
                 [pluginResult setKeepCallbackAsBool:true];
                 [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+            }//end block try
+            @catch(NSException *__block exception) {
+                pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:getExceptionAsString(exception)];
+                [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+            }//end block catch
             } fail: ^(NSString* s) {
                 pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:s];
                 [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
@@ -564,6 +581,11 @@
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Session not started"];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     }
+    }//end func try
+    @catch(NSException* exception) {
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:getExceptionAsString(exception)];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    }//end func catch
 }
 
 - (void) setWhiteBalanceMode:(CDVInvokedUrlCommand*)command {
