@@ -46,7 +46,8 @@
 - (void) invokeTapToFocus:(CGPoint) point;
 - (NSString *)getBase64Image:(CGImageRef)imageRef withQuality:(CGFloat) quality;
 - (NSString *)getBase64FromCIImage:(CIImage*)imageRef;
-- (void) getCIImageText:(CIImage*)img completion:(void(^)(NSString* rectxt)) endtxt;
+- (NSString *)getExceptionAsString:(NSException*)ex;
+- (void) getCIImageText:(CIImage*)img completion:(void(^)(NSString* rectxt)) success fail:(void(^)(NSString* s)) err;
 
 @property (nonatomic) CameraSessionManager *sessionManager;
 @property (nonatomic) CameraRenderController *cameraRenderController;

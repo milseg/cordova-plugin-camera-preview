@@ -402,7 +402,24 @@
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
-- (void) getCIImageText:(CIImage*)img completion:(void(^)( NSString* rectxt)) endtxt {
+- (NSString *)getExceptionAsString:(NSException*)ex {
+    NSString *ret;
+    NSMutableString *x = [NSMutableString string];
+    NSArray* cs = [ex callStackSymbols];
+    NSString* rs = [ex reason];
+
+    [x appendString:[rs mutableCopy]];
+    [x appendString:@"\n"];
+
+    for(NSString* s in cs) {
+        [x appendString:[s mutableCopy]];
+        [x appendString:@"\n"];
+    }
+    ret = x;
+    return ret;
+}
+
+- (void) getCIImageText:(CIImage*)img completion:(void(^)( NSString* rectxt)) success fail:(void(^)(NSString* s)) err{
   if(img == nil) {
     return;
   }
@@ -430,11 +447,11 @@
       if (error != nil) {
         // ...
         NSLog(@"error while get ciimagetext: %@", error);
-        endtxt(ept);
+        success(ept);
         return;        
       }
       if(result == nil) {
-        endtxt(ept);
+        success(ept);
         return;
       }
         for (firblock in result.blocks) {
@@ -445,11 +462,11 @@
           }
         }
         if(count == 0) {
-             endtxt(ept);
+             success(ept);
              return;
         }
         ret = lines;
-        endtxt(ret);
+        success(ret);
 
       // Recognized text
     }];
@@ -536,6 +553,9 @@
                 [params addObject:rectxt];
                 pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:params];
                 [pluginResult setKeepCallbackAsBool:true];
+                [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+            } fail: ^(NSString* s) {
+                pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:s];
                 [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
             }
           ];
