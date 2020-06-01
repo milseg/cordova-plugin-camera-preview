@@ -39,7 +39,7 @@
     }
     @try {
         self.mlVision = [FIRVision vision];
-        self.textRecognizer = [vision onDeviceTextRecognizer];
+        self.textRecognizer = [_mlVision onDeviceTextRecognizer];
     } @catch(NSException *exception) {
         [frv_err_mut appendString:@"Failure initializing text vision 1\n" ];
         [frv_err_mut appendString:[self getExceptionAsString: exception] ];
