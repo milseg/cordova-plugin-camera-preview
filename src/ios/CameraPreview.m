@@ -402,7 +402,7 @@
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
-- (NSString *)getExceptionAsString:(NSException*)ex {
+/*- (NSString *)getExceptionAsString:(NSException*)ex {
     NSString *ret;
     NSMutableString *x = [NSMutableString string];
     NSArray* cs = [ex callStackSymbols];
@@ -417,7 +417,7 @@
     }
     ret = x;
     return ret;
-}
+}*/
 
 - (void) getCIImageText:(CIImage*)img completion:(void(^)( NSString* rectxt)) success fail:(void(^)(NSString* s)) err{
   if(img == nil) {
@@ -474,12 +474,14 @@
       // Recognized text
     }//end block try
     @catch (NSException* exception) { //block catch
-        err([self getExceptionAsString: exception]);
+        //err([self getExceptionAsString: exception]);
+        err(@"Excecao ao reconhecer texto");
     }//end block catch
     }];
   }//end function try
     @catch (NSException* exception) {//Whole function catch
-        err([self getExceptionAsString: exception]);
+        //err([self getExceptionAsString: exception]);
+        err(@"Excecao ao disparar reconhecimento de texto")
     }//end function catch
 }
 
@@ -568,11 +570,13 @@
                 [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
             }//end block try
             @catch(NSException* exception) {
-                pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:[self getExceptionAsString: exception]];
+                //pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:[self getExceptionAsString: exception]];
+                pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Excecao ao adicionar string reconhecida"];
                 [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
             }//end block catch
             } fail: ^(NSString* s) {
-                pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:s];
+                //pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:s];
+                pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Excecao ao tentar reconhecimento de texto"];
                 [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
             }
           ];
@@ -583,7 +587,8 @@
     }
     }//end func try
     @catch(NSException* exception) {
-        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:[self getExceptionAsString: exception]];
+        //pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:[self getExceptionAsString: exception]];
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Excecao ao incializar reconhecimento do frame"];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     }//end func catch
 }
