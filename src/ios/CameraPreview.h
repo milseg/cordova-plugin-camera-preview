@@ -1,7 +1,7 @@
 #import <Cordova/CDV.h>
 #import <Cordova/CDVPlugin.h>
 #import <Cordova/CDVInvokedUrlCommand.h>
-#import <Firebase/Firebase.h>
+@import Firebase;
 
 #import "CameraSessionManager.h"
 #import "CameraRenderController.h"

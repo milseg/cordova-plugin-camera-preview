@@ -79,7 +79,6 @@
             <source url="https://cdn.cocoapods.org/" />
         </config>
         <pods use-frameworks="true">
-            <pod name="Firebase" spec="~> 6.25.0" />
             <pod name="FirebaseAnalytics" spec="~> 6.5.1" />
             <pod name="FirebaseMLVision" spec="~> 0.19.0" />
             <pod name="FirebaseMLVisionTextModel" spec="~> 0.19.0" />

@@ -21,22 +21,12 @@
     } @catch(NSException *exception) {
         NSMutableString *frv_err_mut = [NSMutableString string ];
         NSString *frv_err;
-        @try {
-            [frv_err_mut appendString:@"Failure initializing text vision 1\n" ];
-            [frv_err_mut appendString:[self getExceptionAsString: exception] ];
-            [frv_err_mut appendString:@"\n"];
-            frv_err = frv_err_mut;
-            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:frv_err];
-            [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-        } @catch(NSException *exception_two) {
-            [frv_err_mut appendString:@"Failure initializing text vision 2\n" ];
-            [frv_err_mut appendString:[exception reason] ];
-            [frv_err_mut appendString:@"\n"];
-            [frv_err_mut appendString:[exception_two reason] ];
-            frv_err = frv_err_mut;
-            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:frv_err];
-            [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-        }
+        [frv_err_mut appendString:@"Failure initializing text vision 1\n" ];
+        [frv_err_mut appendString:[self getExceptionAsString: exception] ];
+        [frv_err_mut appendString:@"\n"];
+        frv_err = frv_err_mut;
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:frv_err];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
         return;
     }
     if (self.sessionManager != nil) {
