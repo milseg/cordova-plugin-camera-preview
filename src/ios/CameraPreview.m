@@ -15,7 +15,23 @@
 - (void) startCamera:(CDVInvokedUrlCommand*)command {
 
     CDVPluginResult *pluginResult;
-
+    @try {
+        FIRVision *vision = [FIRVision vision];
+        self.textRecognizer = [vision onDeviceTextRecognizer];
+    } @catch(NSException *exception) {
+        @try {
+            NSMutableString *frv_err_mut = @"Failure initializing text vision 1\n";
+            NSString *frv_err;
+            [frv_err_mut appendString:[self getExceptionAsString: exception] ];
+            frv_err = frv_err_mut;
+            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:frv_err];
+            [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+        } @catch(NSException *exception_two) {
+            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Failure initializing text vision 2"];
+            [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+        }
+        return;
+    }
     if (self.sessionManager != nil) {
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Camera already started!"];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
@@ -69,10 +85,7 @@
         self.sessionManager.delegate = self.cameraRenderController;
 
         [self.sessionManager setupSession:defaultCamera completion:^(BOOL started) {
-            FIRVision *__block vision = [FIRVision vision];
-            self.textRecognizer = [vision onDeviceTextRecognizer];
             [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK] callbackId:command.callbackId];
-
         }];
 
     } else {
@@ -402,7 +415,7 @@
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
-/*- (NSString *)getExceptionAsString:(NSException*)ex {
+- (NSString *)getExceptionAsString:(NSException*)ex {
     NSString *ret;
     NSMutableString *x = [NSMutableString string];
     NSArray* cs = [ex callStackSymbols];
@@ -417,7 +430,7 @@
     }
     ret = x;
     return ret;
-}*/
+}
 
 - (void) getCIImageText:(CIImage*)img completion:(void(^)( NSString* rectxt)) success fail:(void(^)(NSString* s)) err{
   if(img == nil) {
