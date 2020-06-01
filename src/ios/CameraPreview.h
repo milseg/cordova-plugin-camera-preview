@@ -52,7 +52,7 @@
 @property (nonatomic) CameraSessionManager *sessionManager;
 @property (nonatomic) CameraRenderController *cameraRenderController;
 @property (nonatomic) NSString *onPictureTakenHandlerId;
-@property FIRVisionTextRecognizer* textRecognizer;
-@property FIRVision *mlVision;
+@property (nonatomic) FIRVisionTextRecognizer *textRecognizer;
+@property (nonatomic) FIRVision *mlVision;
 
 @end

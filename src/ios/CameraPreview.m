@@ -69,8 +69,8 @@
         self.sessionManager.delegate = self.cameraRenderController;
 
         [self.sessionManager setupSession:defaultCamera completion:^(BOOL started) {
-            self.mlVision = [FIRVision self.mlVision];
-            self.textRecognizer = [self.mlVision onDeviceTextRecognizer];
+            FIRVision *__block vision = [FIRVision vision];
+            self.textRecognizer = [vision onDeviceTextRecognizer];
             [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK] callbackId:command.callbackId];
 
         }];
@@ -481,7 +481,7 @@
   }//end function try
     @catch (NSException* exception) {//Whole function catch
         //err([self getExceptionAsString: exception]);
-        err(@"Excecao ao disparar reconhecimento de texto")
+        err(@"Excecao ao disparar reconhecimento de texto");
     }//end function catch
 }
 
