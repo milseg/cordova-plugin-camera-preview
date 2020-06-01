@@ -69,7 +69,7 @@
         self.sessionManager.delegate = self.cameraRenderController;
 
         [self.sessionManager setupSession:defaultCamera completion:^(BOOL started) {
-            self.mlVision = [FIRVision vision];
+            self.mlVision = [FIRVision self.mlVision];
             self.textRecognizer = [self.mlVision onDeviceTextRecognizer];
             [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK] callbackId:command.callbackId];
 
