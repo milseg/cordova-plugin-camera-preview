@@ -19,15 +19,22 @@
         FIRVision *vision = [FIRVision vision];
         self.textRecognizer = [vision onDeviceTextRecognizer];
     } @catch(NSException *exception) {
+        NSMutableString *frv_err_mut = [NSMutableString string ];
+        NSString *frv_err;
         @try {
-            NSMutableString *frv_err_mut = @"Failure initializing text vision 1\n";
-            NSString *frv_err;
+            [frv_err_mut appendString:@"Failure initializing text vision 1\n" ];
             [frv_err_mut appendString:[self getExceptionAsString: exception] ];
+            [frv_err_mut appendString:@"\n"];
             frv_err = frv_err_mut;
             pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:frv_err];
             [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
         } @catch(NSException *exception_two) {
-            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Failure initializing text vision 2"];
+            [frv_err_mut appendString:@"Failure initializing text vision 2\n" ];
+            [frv_err_mut appendString:[exception reason] ];
+            [frv_err_mut appendString:@"\n"];
+            [frv_err_mut appendString:[exception_two reason] ];
+            frv_err = frv_err_mut;
+            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:frv_err];
             [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
         }
         return;
@@ -418,13 +425,12 @@
 - (NSString *)getExceptionAsString:(NSException*)ex {
     NSString *ret;
     NSMutableString *x = [NSMutableString string];
-    NSArray* cs = [ex callStackSymbols];
     NSString* rs = [ex reason];
 
     [x appendString:[rs mutableCopy]];
     [x appendString:@"\n"];
 
-    for(NSString* s in cs) {
+    for(NSString* s in [ex callStackSymbols]) {
         [x appendString:[s mutableCopy]];
         [x appendString:@"\n"];
     }
