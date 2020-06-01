@@ -10,27 +10,42 @@
     // start as transparent
     self.webView.opaque = NO;
     self.webView.backgroundColor = [UIColor clearColor];
+    @try {
+        [FIRApp configure];
+    } @catch(NSException* exception) {
+        self.visionErr = [self getExceptionAsString: exception];
+    }
 }
 
 - (void) startCamera:(CDVInvokedUrlCommand*)command {
 
     CDVPluginResult *pluginResult;
-    @try {
-        FIRVision *vision = [FIRVision vision];
-        self.textRecognizer = [vision onDeviceTextRecognizer];
-    } @catch(NSException *exception) {
-        NSMutableString *frv_err_mut = [NSMutableString string ];
-        NSString *frv_err;
-        [frv_err_mut appendString:@"Failure initializing text vision 1\n" ];
-        [frv_err_mut appendString:[self getExceptionAsString: exception] ];
+    if (self.sessionManager != nil) {
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Camera already started!"];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+        return;
+    }
+
+    NSMutableString *frv_err_mut = [NSMutableString string ];
+    NSString *frv_err;
+    if(self.visionErr != nil) {
+        [frv_err_mut appendString:@"Error initializing fir\n" ];
+        [frv_err_mut appendString:[self.visionErr mutableCopy] ];
         [frv_err_mut appendString:@"\n"];
         frv_err = frv_err_mut;
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:frv_err];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
         return;
     }
-    if (self.sessionManager != nil) {
-        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Camera already started!"];
+    @try {
+        self.mlVision = [FIRVision vision];
+        self.textRecognizer = [vision onDeviceTextRecognizer];
+    } @catch(NSException *exception) {
+        [frv_err_mut appendString:@"Failure initializing text vision 1\n" ];
+        [frv_err_mut appendString:[self getExceptionAsString: exception] ];
+        [frv_err_mut appendString:@"\n"];
+        frv_err = frv_err_mut;
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:frv_err];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
         return;
     }

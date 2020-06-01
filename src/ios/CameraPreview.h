@@ -54,5 +54,6 @@
 @property (nonatomic) NSString *onPictureTakenHandlerId;
 @property (nonatomic) FIRVisionTextRecognizer *textRecognizer;
 @property (nonatomic) FIRVision *mlVision;
+@property (nonatomic) NSString *visionErr;
 
 @end
